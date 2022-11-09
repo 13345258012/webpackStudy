@@ -1,17 +1,34 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
+const TerserPlugin = require('terser-webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
   mode: "development",
+  devtool: 'inline-source-map',
   entry: "./src/index.js",
   output: {
-    filename: "dist.js",
+    filename: "[name].[contenthash].js",
     path: path.resolve(__dirname, 'dist')
   },
-  plugins: [new HtmlWebpackPlugin({
-    title: '博客列表'
-  })],
+  resolve: {
+    alias: {
+      utils: path.resolve(__dirname, 'src/utils')
+    }
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()]
+  },
+  devServer: {
+    static: './dist'
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: '博客列表'
+    }),
+    new BundleAnalyzerPlugin()
+  ],
   module: {
     rules: [
       {
@@ -22,6 +39,16 @@ module.exports = {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: "asset/resource"
       },
+      {
+        test: /.\js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env"]
+          }
+        }
+      }
     ]
   }
 }

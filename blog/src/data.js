@@ -3,5 +3,6 @@ export function getBlogPosts(){
     '博客1',
     '博客2',
     '博客3',
+    '博客4',
   ]
 }
